@@ -32,10 +32,9 @@ router.post("/", async (req, res) => {
   //   const time = new Date().getTime().valueOf(); // 현재 시간
   try {
     const data = await pool.query(
-      `INSERT INTO job_review(review_title, review_cont, iduser) VALUES(?, ?, ?)`,
+      `INSERT INTO job_review(title, cont, iduser) VALUES(?, ?, ?)`,
       [title, cont, req.user.id]
     );
-    // console.log("됐음");
     res.redirect(`/api/job_review_detail/${data[0].insertId}`);
   } catch (err) {
     console.error(err);

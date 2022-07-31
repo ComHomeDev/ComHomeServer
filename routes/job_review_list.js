@@ -5,7 +5,6 @@ const pool = require("../db.js");
 const templates = require("../lib/templates");
 
 router.get("/", async (req, res) => {
-  let i = 0;
   const data = await pool.query(
     `SELECT * FROM job_review ORDER BY upload_time DESC`
   );

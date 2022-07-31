@@ -23,6 +23,7 @@ router.get("/edu_contest_detail/:edu_contest_no", async (req, res) => {
     }
 
     document.getElementById("my_checkbox").innerText = result;
+    console.log(event);
   }
 
   let body = `<p>${data[0][0].edu_contest_title}</p> 
@@ -47,21 +48,36 @@ router.get("/edu_contest_detail/:edu_contest_no", async (req, res) => {
         comment[0][i].iduser,
       ]);
       if (comment[0][i].secret_check == 0) {
-        //비밀 댓글이 아니라면
-        body += ` <div>
+        //비밀 댓글이 아니면서
+        if (comment[0][i].anon_check == 0) {
+          //익명 댓글 아닌 경우
+          body += ` <div>
       <div>
         <div>
-            <!--댓글 작성자: ${name[0][0].name}-->
-            익명
+            댓글 작성자: ${name[0][0].name}
+            
         </div>
         <span class="comment-content">
-            
             댓글: ${comment[0][i].edu_contest_comment_cont} 
         </span>
         
       </div>
     </div>
     `;
+        } else {
+          console.log("여기");
+          body += ` <div>
+      <div>
+        <div>
+            익명
+        </div>
+        <span class="comment-content">
+            댓글: ${comment[0][i].edu_contest_comment_cont} 
+        </span>
+      </div>
+    </div>
+    `;
+        }
       } else {
         //비밀 댓글이라면
         if (
@@ -69,10 +85,24 @@ router.get("/edu_contest_detail/:edu_contest_no", async (req, res) => {
           req.user.id == comment[0][i].iduser
         ) {
           //자신의 게시글이거나 본인이 쓴 댓글이라면
-          body += ` <div>
+          if (comment[0][i].anon_check == 0) {
+            //익명으로 체크하지 않은 경우
+            body += ` <div>
               <div>
                 <div>
-                <!--댓글 작성자: ${name[0][0].name}-->
+                댓글 작성자: ${name[0][0].name}
+                </div>
+              <span class="comment-content">
+                댓글: ${comment[0][i].edu_contest_comment_cont} 
+              </span>        
+            </div>
+          </div>
+        `;
+          } else {
+            //익명으로 체크한 경우
+            body += ` <div>
+              <div>
+                <div>
                  익명
                 </div>
               <span class="comment-content">
@@ -81,20 +111,37 @@ router.get("/edu_contest_detail/:edu_contest_no", async (req, res) => {
             </div>
           </div>
         `;
+          }
         } else {
           //본인이 쓴 댓글이 아니라면
-          body += ` <div>
-          <div>
-            <div>
-            <!--댓글 작성자: ${name[0][0].name}-->
-             익명
+          //자신의 게시글이거나 본인이 쓴 댓글이라면
+          if (comment[0][i].anon_check == 0) {
+            //익명으로 체크하지 않은 경우
+            body += ` <div>
+              <div>
+                <div>
+                댓글 작성자: ${name[0][0].name}
+                </div>
+                <span class="comment-content">
+                비밀댓글입니다. 
+               </span>        
             </div>
-          <span class="comment-content">
-           비밀댓글입니다. 
-          </span>        
-        </div>
-      </div>
-    `;
+          </div>
+        `;
+          } else {
+            //익명으로 체크한 경우
+            body += ` <div>
+              <div>
+                <div>
+                 익명
+                </div>
+                <span class="comment-content">
+                비밀댓글입니다. 
+               </span>      
+            </div>
+          </div>
+        `;
+          }
         }
       }
       i++;
@@ -105,10 +152,14 @@ router.get("/edu_contest_detail/:edu_contest_no", async (req, res) => {
   } else {
     comment_write += `<form class="comment" action="/edu_cont_comment_write" method="POST">
         <input type="checkbox" id='my_checkbox' /> 
-        비밀댓글 <input name="edu_contest_comment_cont" placeholder="여기에 댓글을 입력해주세요"></input>
-        <input name="edu_contest_no" type="hidden" value="${edu_contest_no}">
+        비밀댓글
+        <input type="checkbox" id='my_checkbox' /> 
+        익명
+        <input name="edu_contest_comment_cont" placeholder="여기에 댓글을 입력해주세요" />
+        <input name="edu_contest_no" type="hidden" value="${edu_contest_no}" />
         <br> 
-        <input type = "hidden" name = "secret_check" value = "1" onclick="getCheckboxValue(event)"/>
+        <input type = "hidden" name = "secret_check" value = "1" onclick="getCheckboxValue(value)"/>
+        <input type = "hidden" name = "anon_check" value = "1" onclick="getCheckboxValue(value)"/>
         <button type="submit">입력</button>
         </form>`;
   }

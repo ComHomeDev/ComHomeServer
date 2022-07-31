@@ -11,12 +11,14 @@ router.post("/edu_cont_comment_write", async (req, res) => {
   const comment = post.edu_contest_comment_cont;
   const cont_no = post.edu_contest_no;
   let secret_check = post.secret_check;
+  let anon_check = post.anon_check;
   secret_check = parseInt(secret_check);
-
+  anon_check = parseInt(anon_check);
+  console.log("비밀여부: " + secret_check + "익명여부: " + anon_check);
   try {
     const data = await pool.query(
-      `INSERT INTO edu_contest_comment(edu_contest_comment_cont, iduser, edu_contest_no, secret_check) VALUES(?, ?, ?, ?)`,
-      [comment, user, cont_no, secret_check]
+      `INSERT INTO edu_contest_comment(edu_contest_comment_cont, iduser, edu_contest_no, secret_check, anon_check) VALUES(?, ?, ?, ?, ?)`,
+      [comment, user, cont_no, secret_check, anon_check]
     );
     res.writeHead(302, {
       Location: "/edu_contest_detail/" + cont_no,

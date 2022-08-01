@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("../config/passport.js");
-const pool = require("../db.js");
-const templates = require("../lib/templates");
+const pool = require("../../db.js");
+const templates = require("../../lib/templates");
 
 function date_to_str(format) {
   var year = format.getFullYear();

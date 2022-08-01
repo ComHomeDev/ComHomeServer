@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("../config/passport.js");
-const pool = require("../db.js");
-const templates = require("../lib/templates");
+const pool = require("../../db.js");
+const templates = require("../../lib/templates");
 
 router.get("/extra_review_list", async (req, res) => {
   const title = "대외활동 후기 게시판";

@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
     }
     else {
         res.write(`<script type="text/javascript">alert('Fill in blanks')</script>`);
-        res.write('<script>window.location="/student_council_notice_list"</script>')
+        res.write('<script>window.location="/api/student_council_notice_list"</script>')
     }
 });
 

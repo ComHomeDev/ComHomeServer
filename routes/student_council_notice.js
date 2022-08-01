@@ -64,13 +64,13 @@ router.post("/post", fileFields, async (req, res) => {
     }
     const post = req.body;
     const date=new Date();
-    const sc_notice_id=date % 10000;
-    const title = post.sc_notice_title;
-    const cont = post.sc_notice_cont;
-    const sc_notice_img = req.files.img == undefined ? '' : req.files.img[0].path;
-    const sc_notice_file = req.files.file == undefined ? '' : req.files.file[0].path;
+    const id=date % 10000;
+    const title = post.title;
+    const desc = post.desc;
+    // const img = req.files.img == undefined ? '' : req.files.img[0].path;
+    // const file = req.files.file == undefined ? '' : req.files.file[0].path;
     const sql=`INSERT INTO student_council_notice(sc_notice_no, sc_notice_title, sc_notice_cont, iduser, sc_created_date, sc_edited_date, sc_views, sc_img) VALUES(?,?,?,?,?,?,?,?)`
-    const params=[sc_notice_id, title, cont, req.user.id, date, date, 0, sc_notice_img];
+    const params=[sc_notice_id, title, desc, req.user.id, date, date, 0, sc_notice_img];
 
     try {
         const data = await pool.query(sql,params);

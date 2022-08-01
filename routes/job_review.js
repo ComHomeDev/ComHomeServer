@@ -4,32 +4,14 @@ const passport = require("../config/passport.js");
 const pool = require("../db.js");
 const templates = require("../lib/templates");
 
-router.get("/", async (req, res) => {
-  const title = "취업 후기글 모아보기";
-  const head = ``;
-  const body = `
-  <form action="/api/job_review_write" method ="post">
-  <p>${req.user.name}</p>
-  <label> 제목: 
-    <input type = "text" name = "review_title" placeholder = "제목을 작성하세요" /> </label>
-    <br>
-    <br>
-    <label> 내용: 
-    <input type = "textarea" name = "review_cont" placeholder = "내용을 작성하세요" /> </label>
-    <br>
-    <button type="submit"><b>입력</b></button>
-    </form>
-  `;
-
-  var html = templates.HTML(title, head, body);
-  res.send(html);
-});
-
 router.post("/", async (req, res) => {
   const post = req.body;
-  const title = post.review_title;
-  const cont = post.review_cont;
-  //   const time = new Date().getTime().valueOf(); // 현재 시간
+  const title = post.title;
+  const cont = post.desc;
+
+  console.log(title);
+  console.log(cont);
+
   try {
     const data = await pool.query(
       `INSERT INTO job_review(title, cont, iduser) VALUES(?, ?, ?)`,

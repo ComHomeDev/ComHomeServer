@@ -4,6 +4,7 @@ const app = express();
 const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
+const { publicKey, sendNotification } = require("./routes/push");
 
 app.use(cors());
 app.use(session({secret: "MySecret", resave: false, saveUninitialized: true}));
@@ -96,46 +97,53 @@ app.use("/api/student_council_notice", require("./routes/student_council_notice"
 app.use("/api/student_council_notice_detail", require("./routes/student_council_notice_detail"));
 app.use("/api/student_council_notice_edit", require("./routes/student_council_notice_edit"));
 
-const fcm = require('firebase-admin');
-
-let fcm_cert = require('./comhome-4cdb8-firebase-adminsdk-fa0c1-0c19882819.json')
-
-fcm.initializeApp({ 
-	credential: fcm.credential.cert(fcm_cert), 
-})
-
-app.get('/v1/push', (req, res) => {
-
-  let deviceToken = [
-      "AAAAGCBXrmQ:APA91bFupm0bghjtgzArxJ0jc-BbI93JueeSOTHN96an7-F4GX-WorM2nshEJckyM-cMNWIc3A4xp9dW5XbFWPq26CgKW8SLen4QASvS04W7nOz6CmrIwmQe1XgfMyoyRnC2m52tgIXf",
-      "AAAAGCBXrmQ:APA91bE_Ew6cyu4tcC4KE3kjupc_e_sK3IysnLY3JFmPyDPqLZ6Vc43gAkLt8A_o2WcBn9Jb4TXMvNNT6e9RFqXYJrrBkc3SyjFm_Y0nda6HtKIc3QWcwyjWcnV5O4NV2XMI97GBdnV4",
-      "AAAAGCBXrmQ:APA91bEyROwn63hlGrvD-sth7YFS8l-YdxfSdsGUD3Azu_anWuAvqLsuCJPWMXBPMz5SCJ5O2lEswbzgNpxSQL9l2VbRWWgjIkhrV7ag-PVGCoVGAVe5hmPGISh50JvdNTBnlOxKP8-p"
-  ]
-
-  let message = {
-      notification:{
-          title:'테스트 발송',
-          body:'테스트 푸쉬 알람!',
-      },
-      tokens:deviceToken,
-  }
-
-  // [멀티 캐스트]
-  fcm.messaging().sendMulticast(message)
-      .then((response) => {
-          console.log(response);
-          if (response.failureCount > 0) {
-              const failedTokens = [];
-              response.responses.forEach((resp, idx) => {
-                  if (!resp.success) {
-                      failedTokens.push(deviceToken[idx]);
-                  }
-              });
-              console.log('List of tokens that caused failures: ' + failedTokens);
-          }
-          return res.status(200).json({success: true})
-      });
+app.get("/api/publicKey", (_req, res) => {
+  res.send(publicKey);
 });
+
+app.use("/api/pushSubscription", require("./routes/pushSubscription"));
+
+// const fcm = require('firebase-admin');
+
+// let fcm_cert = require('./comhome-4cdb8-firebase-adminsdk-fa0c1-0c19882819.json')
+
+// fcm.initializeApp({ 
+// 	credential: fcm.credential.cert(fcm_cert), 
+// })
+
+// app.get('/v1/push', (req, res) => {
+
+//   let deviceToken = [
+//       "AAAAGCBXrmQ:APA91bFupm0bghjtgzArxJ0jc-BbI93JueeSOTHN96an7-F4GX-WorM2nshEJckyM-cMNWIc3A4xp9dW5XbFWPq26CgKW8SLen4QASvS04W7nOz6CmrIwmQe1XgfMyoyRnC2m52tgIXf",
+//       "AAAAGCBXrmQ:APA91bE_Ew6cyu4tcC4KE3kjupc_e_sK3IysnLY3JFmPyDPqLZ6Vc43gAkLt8A_o2WcBn9Jb4TXMvNNT6e9RFqXYJrrBkc3SyjFm_Y0nda6HtKIc3QWcwyjWcnV5O4NV2XMI97GBdnV4"
+//   ]
+
+//   let message = {
+//       notification:{
+//           title:'테스트 발송',
+//           body:'테스트 푸쉬 알람!',
+//       },
+//       tokens:deviceToken,
+//   }
+
+//   // [멀티 캐스트]
+//   fcm.messaging().sendMulticast(message)
+//       .then((response) => {
+//           console.log(response);
+//           if (response.failureCount > 0) {
+//               const failedTokens = [];
+//               response.responses.forEach((resp, idx) => {
+//                   if (!resp.success) {
+//                       failedTokens.push(deviceToken[idx]);
+//                   }
+//               });
+//               console.log('List of tokens that caused failures: ' + failedTokens);
+//               return res.status(200).json({success: false})
+//           }
+//           else 
+//             return res.status(200).json({success: true})
+//       });
+// });
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);

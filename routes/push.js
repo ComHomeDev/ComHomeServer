@@ -1,40 +1,24 @@
-const fcm = require('firebase-admin');
-const express = require("express");
-const router = express.Router();
+const config = require("../config/default.json");
+const webpush = require("web-push");
 
-let fcm_cert = require('../comhome-4cdb8-firebase-adminsdk-fa0c1-0c19882819.json')
+// config에서 키 값 가져오기
+const gcmKey = config.gcmKey;
+const subject = config.subject;
+const vapidPublic = config.vapidPublic;
+const vapidPrivate = config.vapidPrivate;
 
-fcm.initializeApp({ 
-	credential: fcm.credential.cert(fcm_cert), 
-})
+// @ch10. 푸시 설정
+webpush.setGCMAPIKey(gcmKey);
+webpush.setVapidDetails(subject, vapidPublic, vapidPrivate);
 
-router.get('/v1/push', (req, res) => {
+/**
+ * 푸시 알림을 전송합니다.
+ * @param {any} subscription 구독 정보 객체
+ * @param {any} data 푸시 알림으로 전달할 데이터 객체
+ */
+function sendNotification(subscription, data) {
+    return webpush.sendNotification(subscription, JSON.stringify(data));
+}
 
-    let deviceToken = [
-        "디바이스에서 앱 설치시 디바이스 토큰1",
-        "디바이스에서 앱 설치시 디바이스 토큰2",
-    ]
-
-    let message = {
-        notification:{
-            title:'테스트 발송',
-            body:'테스트 푸쉬 알람!',
-        },
-        tokens:deviceToken,
-    }
-
-    // [멀티 캐스트]
-    fcm.messaging().sendMulticast(message)
-        .then((response) => {
-            if (response.failureCount > 0) {
-                const failedTokens = [];
-                response.responses.forEach((resp, idx) => {
-                    if (!resp.success) {
-                        failedTokens.push(deviceToken[idx]);
-                    }
-                });
-                console.log('List of tokens that caused failures: ' + failedTokens);
-            }
-            return res.status(200).json({success: true})
-        });
-});
+exports.publicKey = vapidPublic;
+exports.sendNotification = sendNotification;

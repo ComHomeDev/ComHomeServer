@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const templates = require("../lib/templates");
 const { request } = require("http");
+const { sendNotification } = require("./push.js");
 
 router.get("/post", async (req, res) => {
     if(!req.user) {
@@ -58,9 +59,9 @@ const fileFields = upload.fields([
 ])
 
 router.post("/post", fileFields, async (req, res) => {
-    const { img, file } = req.files;
+    const { img, file } = req.body.files;
     let count;
-    if(req.files.file){
+    if(req.body.files.file){
         count=Object.keys(file).length;
     }
     const post = req.body;
@@ -68,13 +69,37 @@ router.post("/post", fileFields, async (req, res) => {
     const sc_notice_id=date % 10000;
     const title = post.title;
     const content = post.content;
-    const sc_notice_img = req.files.img == undefined ? '' : req.files.img[0].path;
-    const sc_notice_file = req.files.file == undefined ? '' : req.files.file[0].path;
+    const sc_notice_img = req.body.files.img == undefined ? '' : req.body.files.img[0].path;
+    const sc_notice_file = req.body.files.file == undefined ? '' : req.body.files.file[0].path;
     const sql=`INSERT INTO student_council_notice(no, title, content, iduser, upload_time, edited_date, views, img, file_status) VALUES(?,?,?,?,?,?,?,?,?)`
-    const params=[sc_notice_id, title, content, req.user.id, date, date, 0, sc_notice_img, count > 0 ? 1 : 0];
+    const params=[sc_notice_id, title, content, "111865899156782818991", date, date, 0, sc_notice_img, count > 0 ? 1 : 0];
 
     try {
         const data = await pool.query(sql,params);
+
+        const [sub_data] = await pool.query(
+            `SELECT subscribe FROM subscriptions WHERE subscribe is not null`
+        );
+        // /거기가 ture인 사용자들의sub가져와 
+        
+        const message = {
+            message: `학생회 공지가 새로 올라왔습니다!`,
+        };
+        console.log(sub_data);
+        sub_data.map((subscribe) => {
+            sendNotification(JSON.parse(subscribe.subscribe), message);
+        })
+        //알림 보내기
+        // sendNotification(sub_data, message)
+        //     .then((response) => {
+        //     if (response.statusCode === 201) {
+        //         logger.success("알림이 전송!");
+        //     } else {
+        //         logger.info(response);
+        //     }
+        // })
+        // .catch((err) => logger.error(err.body.trim()));
+
         res.write(`<script type="text/javascript">alert('Student Council notice post Success !!')</script>`);
         res.write(`<script>window.location="/api/student_council_notice_list"</script>`);
         res.end();

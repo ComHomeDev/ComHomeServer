@@ -49,6 +49,19 @@ router.post("/update/:id", async (req, res) => {
       [title, content, no]
     );
 
+    //취업 후기 알람 ON한 사용자들
+    const job_data = await pool.query(
+      `SELECT subscribe FROM subscriptions WHERE job_review and subscribe is not null`
+    );
+    
+    const message = {
+      message: `취업 후기 글이 수정되었습니다!`,
+    };
+    console.log(job_data);
+    job_data.map((subscribe) => {
+        sendNotification(JSON.parse(subscribe.subscribe), message);
+    })
+
     res.write(
       `<script type="text/javascript">alert('Job_review Edit Success !!')</script>`
     );

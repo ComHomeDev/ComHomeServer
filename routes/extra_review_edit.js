@@ -51,6 +51,18 @@ router.post("/update/:id", async (req, res) => {
             "UPDATE extra_review SET title=?, content=? WHERE no=?",
             [title, content, no]
         );
+        //대외 활동 후기 알람 ON한 사용자들
+        const extra_data = await pool.query(
+            `SELECT subscribe FROM subscriptions WHERE extra_review and subscribe is not null`
+        );
+        
+        const message = {
+            message: `대외 활동 후기 글이 수정되었습니다!`,
+        };
+        console.log(extra_data);
+        extra_data.map((subscribe) => {
+            sendNotification(JSON.parse(subscribe.subscribe), message);
+        })        
 
         res.write(
             `<script type="text/javascript">alert('Extra_review Edit Success !!')</script>`

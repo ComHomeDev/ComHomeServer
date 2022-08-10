@@ -109,6 +109,20 @@ const fileFields = upload.fields([
 
     try {
         const data = await pool.query(sql,params);
+
+        //채용 인턴십 알람 ON한 사용자들
+        const recruit_data = await pool.query(
+          `SELECT subscribe FROM subscriptions WHERE recruit_intern and subscribe is not null`
+        );
+        
+        const message = {
+          message: `채용 인턴십 글이 수정되었습니다!`,
+        };
+        console.log(recruit_data);
+        recruit_data.map((subscribe) => {
+            sendNotification(JSON.parse(subscribe.subscribe), message);
+        })
+
         //console.log(data);
         res.write(`<script type="text/javascript">alert('Recruit Internship Edit Success !!')</script>`);
         res.write(`<script>window.location="/api/recruit_internship_list"</script>`);

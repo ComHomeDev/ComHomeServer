@@ -78,18 +78,9 @@ app.use("/api/job_review_edit", require("./routes/job_review_edit"));
 
 //채용인턴십 글
 app.use("/api/recruit_internship", require("./routes/recruit_internship"));
-app.use(
-  "/api/recruit_internship_list",
-  require("./routes/recruit_internship_list")
-);
-app.use(
-  "/api/recruit_internship_detail",
-  require("./routes/recruit_internship_detail")
-);
-app.use(
-  "/api/recruit_internship_edit",
-  require("./routes/recruit_internship_edit")
-);
+app.use("/api/recruit_internship_list", require("./routes/recruit_internship_list"));
+app.use("/api/recruit_internship_detail", require("./routes/recruit_internship_detail"));
+app.use("/api/recruit_internship_edit", require("./routes/recruit_internship_edit"));
 app.use("/api/download", require("./routes/download"));
 
 //교육/공모전 글
@@ -100,10 +91,7 @@ app.use("/api/edu_contest_edit", require("./routes/edu_contest_edit"));
 
 //교육/공모전 댓글
 app.use("/api/edu_cont_comment_write", require("./routes/edu_cont_comment"));
-app.use(
-  "/api/edu_contest_comment_edit",
-  require("./routes/edu_contest_comment_edit")
-);
+app.use("/api/edu_contest_comment_edit", require("./routes/edu_contest_comment_edit"));
 
 //교육/공모전 댓글
 // app.use(
@@ -112,26 +100,15 @@ app.use(
 // );
 
 //학생회 공지 글
-app.use(
-  "/api/student_council_notice_list",
-  require("./routes/student_council_notice_list")
-);
-app.use(
-  "/api/student_council_notice_check",
-  require("./routes/student_council_notice_check")
-);
-app.use(
-  "/api/student_council_notice",
-  require("./routes/student_council_notice")
-);
-app.use(
-  "/api/student_council_notice_detail",
-  require("./routes/student_council_notice_detail")
-);
-app.use(
-  "/api/student_council_notice_edit",
-  require("./routes/student_council_notice_edit")
-);
+app.use("/api/student_council_notice_list", require("./routes/student_council_notice_list"));
+// app.use("/api/student_council_notice_check", require("./routes/student_council_notice_check"));
+app.use("/api/student_council_notice", require("./routes/student_council_notice"));
+app.use("/api/student_council_notice_detail", require("./routes/student_council_notice_detail"));
+app.use("/api/student_council_notice_edit", require("./routes/student_council_notice_edit"));
+
+app.get("/api/publicKey", (_req, res) => {res.send(publicKey);});
+
+app.use("/api/pushSubscription", require("./routes/pushSubscription"));
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);

@@ -34,6 +34,20 @@ router.post("/", async (req, res) => {
       `INSERT INTO extra_review(title, content, iduser) VALUES(?, ?, ?)`,
       [title, content, req.user.id]
     );
+
+    //알람
+    //대외 활동 후기 알람 ON한 사용자들
+    const extra_data = await pool.query(
+      `SELECT subscribe FROM subscriptions WHERE extra_review and subscribe is not null`
+    );
+    const message = {
+      message: `대외 활동 후기 글이 새로 올라왔습니다!`,
+    };
+    console.log(extra_data);
+    extra_data.map((subscribe) => {
+        sendNotification(JSON.parse(subscribe.subscribe), message);
+    })
+    
     res.json({data:data});
     // res.redirect(`/api/extra_review_detail/${data[0].insertId}`);
   } catch (err) {

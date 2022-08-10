@@ -88,6 +88,20 @@ router.post("/post", fileFields, async (req, res) => {
 
   try {
     const data = await pool.query(sql, params);
+
+    //알람
+    //채용인턴십 알람 ON한 사용자들
+    const recruit_data = await pool.query(
+      `SELECT subscribe FROM subscriptions WHERE recruit_intern and subscribe is not null`
+    );
+    const message = {
+      message: `채용 인턴십 글이 새로 올라왔습니다!`,
+    };
+    console.log(recruit_data);
+    recruit_data.map((subscribe) => {
+        sendNotification(JSON.parse(subscribe.subscribe), message);
+    })
+    
     //첨부파일 table에 저장
     for (let i = 0; i < count; i++) {
       const data_file = await pool.query(

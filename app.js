@@ -4,6 +4,7 @@ const app = express();
 const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
+const pool = require("./db.js");
 
 app.use(cors());
 app.use(session({secret: "MySecret", resave: false, saveUninitialized: true}));
@@ -20,7 +21,12 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 //홈페이지 생성 (req.user는 passport의 serialize를 통해 user 정보 저장되어있음)
 app.get("/", async (req, res) => {
   const temp = getPage("Welcome", "Welcome to visit...", getBtn(req.user));
-  // const data = getHtml(); 크롤링 확인하려고..
+  
+  //로그인 시 사용자 구독정보 전송
+  if (req.user != undefined){
+  const [data] = await pool.query(`SELECT recruit_intern, exhibition, student_council_notice, job_review, edu_contest, cs_notice, extra_review FROM subscriptions where iduser = ${req.user.id}`);
+    console.log("data : ", data);
+  }
   res.send(temp);
 });
 

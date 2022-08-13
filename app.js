@@ -22,10 +22,13 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 app.get("/", async (req, res) => {
   const temp = getPage("Welcome", "Welcome to visit...", getBtn(req.user));
   
+  console.log(req.user);
   //로그인 시 사용자 구독정보 전송
   if (req.user != undefined){
-  const [data] = await pool.query(`SELECT recruit_intern, exhibition, student_council_notice, job_review, edu_contest, cs_notice, extra_review FROM subscriptions where iduser = ${req.user.id}`);
-    console.log("data : ", data);
+    console.log(req.user);
+    const [data] = await pool.query(`SELECT recruit_intern, exhibition, student_council_notice, job_review, edu_contest, cs_notice, extra_review FROM subscriptions where iduser = ${req.user.id}`);
+      console.log("data : ", data);
+      res.json({data: data});
   }
   res.send(temp);
 });

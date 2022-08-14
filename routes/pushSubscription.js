@@ -6,57 +6,192 @@ const templates = require("../lib/templates");
 const path = require("path");
 
 router.post("/", async(req, res) => {
-    // console.log(req.subscription);
-
-    // const user = getUser(req.headers);
-    // const data = JSON.parse(req.body.subscription);
     const subscription = JSON.stringify(req.body.subscription);
     const iduser = req.body.iduser;
-    // console.log(subscription);
-    //if iduser있으면 update, 없으면 insert그대로
-    if (iduser){
+
+    const [data] = await pool.query(
+        'SELECT iduser FROM subscriptions where iduser = ?',
+        [iduser]
+    );
+
+    console.log(data.length);
+
+    if (data.length != 0){  //알림 취소
         try {
             const data = await pool.query(
-                'UPDATE subscriptions set subscribe= NULL where iduser = ?',
+                'DELETE FROM subscriptions where iduser = ?',
                 [iduser]
             );
+            res.json({data:data});
         } catch (err) {
             console.error(err);
         }
     }
-    else{
+    else{   //알림 설정
         try {
             const data = await pool.query(
                 `INSERT INTO subscriptions(iduser, subscribe) VALUES(?, ?)`,
                 [iduser, subscription]
             );
+            res.json({data:data});
         } catch (err) {
             console.error(err);
         }
     }
+});
 
-    //db 구독한 user, 
-        // // 해당 유저의 구독 정보 저장
-        // const inserted = SimpleDatabase.upsert("user", {
-        // where: {
-        //     id: user,
-        // },
-        // data: {
-        //     subscription,
-        // },
-        // });
+router.post("/sub", async(req, res) => {
+    const iduser = req.body.iduser;
+    const type = req.body.type;
     
-        // if (inserted) {
-        // if (subscription) {
-        //     logger.success(`${user}님이 푸시 서비스를 구독했습니다.`);
-        // } else {
-        //     logger.success(`${user}님이 푸시 서비스 구독을 취소했습니다.`);
-        // }
+    if (type == "recruit_intern"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET recruit_intern=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "exhibition"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET exhibition=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "student_council_notice"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET student_council_notice=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "job_review"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET job_review=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "edu_contest"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET edu_contest=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "cs_notice"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET cs_notice=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "extra_review"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET extra_review=? WHERE iduser = ?',
+                [1, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } 
+});
     
-        // res.status(200).json({ user });
-        // } else {
-        // res.status(500).end();
-        // }
-    });
+router.post("/sub_cancel", async(req, res) => {
+    const iduser = req.body.iduser;
+    const type = req.body.type;
+    
+    if (type == "recruit_intern"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET recruit_intern=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "exhibition"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET exhibition=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "student_council_notice"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET student_council_notice=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "job_review"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET job_review=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "edu_contest"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET edu_contest=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "cs_notice"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET cs_notice=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } else if (type == "extra_review"){
+        try {
+            const data = await pool.query(
+                'UPDATE subscriptions SET extra_review=? WHERE iduser = ?',
+                [0, iduser]
+            );
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    } 
+});
     
 module.exports = router;

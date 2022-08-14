@@ -19,7 +19,7 @@ app.use(express.json());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
 //홈페이지 생성 (req.user는 passport의 serialize를 통해 user 정보 저장되어있음)
-app.get("/", async (req, res) => {
+app.get("/api", async (req, res) => {
   const temp = getPage("Welcome", "Welcome to visit...", getBtn(req.user));
   
   console.log(req.user);

@@ -7,6 +7,8 @@ const path = require('path');
 const templates = require("../lib/templates");
 const { request } = require("http");
 
+//merge되나
+
 // router.get("/post", async (req, res) => {
 //     if(!req.user) {
 //         res.write(`<script type="text/javascript">alert('Please Login First !!')</script>`);

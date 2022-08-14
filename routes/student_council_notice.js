@@ -7,43 +7,43 @@ const path = require("path");
 const templates = require("../lib/templates");
 const {request} = require("http");
 
-// router.get("/post", async (req, res) => {
-//     if(!req.user) {
-//         res.write(`<script type="text/javascript">alert('Please Login First !!')</script>`);
-//         res.write(`<script>window.location="/api/auth/login"</script>`);
-//         res.end();
-//     }
-//     //
-//     const title = "학생회 공지글 작성";
-//     const head = ``;
-//     const body = `
-//     <form action="/api/student_council_notice/post" method ="post" enctype="multipart/form-data" accept-charset="UTF-8">
-//         <b>학생회 공지 작성</b>
-//         <br>
-//         <label> 제목: 
-//             <input type = "text" name = "title" placeholder = "제목을 작성하세요" /> </label>
-//         <br>
-//         <label> 내용: 
-//             <textarea name="content" placeholder = "내용을 작성하세요"></textarea></label>
-//         <br>
-//         <label> 시작 날짜: 
-//         <input type = "date" name = "start_date"/> </label>
-//         <br>
-//         <label> 종료 날짜: 
-//         <input type = "date" name = "end_date"/> </label>
-//         <br>
-//         <label> 사진: 
-//             <input type='file' name='img' accept='image/jpg, image/png, image/jpeg' /></label>
-//             <br>
-//         <label> 파일: 
-//             <input type='file' name='file' multiple/></label>
-//         <button type="submit"><b>등록</b></button>
-//     </form>
-//     `;
+router.get("/post", async (req, res) => {
+    if(!req.user) {
+        res.write(`<script type="text/javascript">alert('Please Login First !!')</script>`);
+        res.write(`<script>window.location="/api/auth/login"</script>`);
+        res.end();
+    }
+    //
+    const title = "학생회 공지글 작성";
+    const head = ``;
+    const body = `
+    <form action="/api/student_council_notice/post" method ="post" enctype="multipart/form-data" accept-charset="UTF-8">
+        <b>학생회 공지 작성</b>
+        <br>
+        <label> 제목: 
+            <input type = "text" name = "title" placeholder = "제목을 작성하세요" /> </label>
+        <br>
+        <label> 내용: 
+            <textarea name="content" placeholder = "내용을 작성하세요"></textarea></label>
+        <br>
+        <label> 시작 날짜: 
+        <input type = "date" name = "start_date"/> </label>
+        <br>
+        <label> 종료 날짜: 
+        <input type = "date" name = "end_date"/> </label>
+        <br>
+        <label> 사진: 
+            <input type='file' name='img' accept='image/jpg, image/png, image/jpeg' /></label>
+            <br>
+        <label> 파일: 
+            <input type='file' name='file' multiple/></label>
+        <button type="submit"><b>등록</b></button>
+    </form>
+    `;
     
-//     var html = templates.HTML(title, head, body);
-//     res.send(html);
-// });
+    var html = templates.HTML(title, head, body);
+    res.send(html);
+});
 
 //이미지 업로드를 위한 multer
 const upload = multer({

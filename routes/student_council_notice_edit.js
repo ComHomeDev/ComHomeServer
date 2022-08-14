@@ -5,6 +5,69 @@ const templates = require("../lib/templates");
 const multer = require("multer");
 const path = require("path");
 
+
+// 글 수정하기
+router.post("/", async (req, res, next) => {
+  const data = await pool.query(
+    `SELECT * FROM student_council_notice WHERE no=${req.body.no}`
+  );
+  const data_det = data[0][0];
+  // res.json({data_det: data_det});
+  const title = "학생회 공지 수정";
+  const head = ``;
+  let body = `
+    <form action="/api/student_council_notice_edit/update" method ="post" enctype="multipart/form-data" accept-charset="UTF-8">  
+    <b>학생회 공지 작성</b>
+        <br>
+        <label> 제목: 
+            <input type = "text" name = "title" value="${data[0][0].title}" /> </label>
+        <br>
+        <br>
+        <label> 내용: 
+            <textarea name="content">${data[0][0].content}</textarea></label>
+        <br>
+        <label> 시작 날짜: 
+            <input type = "date" name = "start_date" value="${data[0][0].start_date}"/></label>
+        <br>
+        <label> 종료 날짜: 
+            <input type = "date" name = "end_date" value = "${data[0][0].end_date}"/></label>
+        <br>
+        <label> 파일: 
+            <input type='file' name='file' multiple/></label>
+            <br>
+    `;
+  if (data[0][0].img != "") {
+    body += `
+        <script type="text/javascript">
+            function div_hide() {
+                document.getElementById("showImage").style.display = "none";
+                document.getElementById("deleteBtn").style.display = "none";
+                document.getElementById("addImage").style.display = "block";}
+        </script>
+        <img id='showImage' src="${data[0][0].img}"/>
+        <label> 사진: 
+        <input type="button" id="deleteBtn" value="X(이미지삭제)" onclick="div_hide();"/>
+        <input style="display:none;" type='file' id='addImage' name='img' accept='image/jpg, image/png, image/jpeg'/>
+        </br>
+        `;
+  } else {
+    body += `
+        <label> 사진: 
+            <input type='file' name='img' accept='image/jpg, image/png, image/jpeg' /></label>
+            <br>
+        `;
+  }
+
+  body += `
+        <input type="hidden" name="no" value="${data[0][0].no}">
+        <input type="submit" value="수정">
+        </form>
+    `;
+
+  var html = templates.HTML(title, head, body);
+  res.send(html);
+});
+
 //이미지 업로드를 위한 multer
 const upload = multer({
   storage: multer.diskStorage({

@@ -8,15 +8,14 @@ const path = require("path");
 router.post("/", async(req, res) => {
     const subscription = JSON.stringify(req.body.subscription);
     const iduser = req.body.iduser;
+    const bool = req.body.bool;
 
     const [data] = await pool.query(
         'SELECT iduser FROM subscriptions where iduser = ?',
         [iduser]
     );
 
-    console.log(data.length);
-
-    if (data.length != 0){  //알림 취소
+    if (bool==false && data.length != 0){  //알림 취소
         try {
             const data = await pool.query(
                 'DELETE FROM subscriptions where iduser = ?',
@@ -27,7 +26,7 @@ router.post("/", async(req, res) => {
             console.error(err);
         }
     }
-    else{   //알림 설정
+    else if (bool==true && data.length == 0){   //알림 설정
         try {
             const data = await pool.query(
                 `INSERT INTO subscriptions(iduser, subscribe) VALUES(?, ?)`,
@@ -38,12 +37,19 @@ router.post("/", async(req, res) => {
             console.error(err);
         }
     }
+    else {
+        try {
+            res.json({data:data});
+        } catch (err) {
+            console.error(err);
+        }
+    }
 });
 
 router.post("/sub", async(req, res) => {
     const iduser = req.body.iduser;
     const type = req.body.type;
-    
+
     if (type == "recruit_intern"){
         try {
             const data = await pool.query(

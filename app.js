@@ -25,15 +25,14 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 app.get("/api", async (req, res) => {
   const temp = getPage("Welcome", "Welcome to visit...", getBtn(req.user));
   
-  console.log(req.user);
+  const iduser = req.query.iduser;
   //로그인 시 사용자 구독정보 전송
-  if (req.user != undefined){
-    console.log(req.user);
-    const [data] = await pool.query(`SELECT recruit_intern, exhibition, student_council_notice, job_review, edu_contest, cs_notice, extra_review FROM subscriptions where iduser = ${req.user.id}`);
-      console.log("data : ", data);
+  if (iduser != undefined){
+    const [data] = await pool.query(`SELECT recruit_intern, exhibition, student_council_notice, job_review, edu_contest, cs_notice, extra_review FROM subscriptions where iduser = ${iduser}`);
       res.json({data: data});
+  }else{
+    res.json({message : '400 Bad Request'}); 
   }
-  res.send(temp);
 });
 
 //프론트 임시로->url 바로 들어가도 된다.

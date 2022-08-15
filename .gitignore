@@ -1,4 +1,6 @@
 node_modules
 package-lock.json
 db.js
+config/default.json
+config/comhome-7cab0-firebase-adminsdk-dc7ia-e24746dcd5.json
 .env

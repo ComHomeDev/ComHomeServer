@@ -18,7 +18,7 @@ const bucket = storage.bucket("comhome-7cab0.appspot.com");
 const multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024 // no larger than 5mb, you can change as needed.
+    fileSize: 10 * 1024 * 1024 // no larger than 5mb, you can change as needed.
   }
 });
 
@@ -55,42 +55,47 @@ router.get("/post", async (req, res) => {
     res.send(html);
 });
 
-//이미지 업로드를 위한 multer >> 없애도 될듯
-// const upload = multer({
-//     storage: multer.diskStorage({
-//         destination: function (req, file, callback) {
-//             callback(null, 'uploads/')
-//         },
-//         filename: function (req, file, callback) {
-//             callback(null, new Date().valueOf() + path.extname(file.originalname))
-//         }
-//     }),
-// });
 
+const fileFields = multer.fields([
+    { name: 'img', maxCount: 1 },
+    { name: 'file', maxCount: 8 },
+])
 
-// const fileFields = upload.fields([
-//     { name: 'img', maxCount: 1 },
-//     { name: 'file', maxCount: 8 },
-// ])
+//let count;
 
-router.post("/post", multer.single('file'), async (req, res) => {
-    //const { img, file } = req.files;
+router.post("/post", fileFields, async (req, res) => {
+    const fileinfo=req.files;
+    const { img, file } = fileinfo;
     let count;
-    // if(req.files.file){
-    //     count=Object.keys(file).length;
-    // }
+    if(req.files.file){
+        count=Object.keys(file).length;
+    }
 
-    let file = req.file;
-    //console.log(file);
-
-    if (file) {
-      uploadImageToStorage(file).then((success) => {
-        res.status(200).send({
-          status: 'success'
-        });
+    if (fileinfo.img) {
+      console.log(img);
+      uploadImageToStorage(fileinfo.img[0]).then((success) => {
+        // res.status(200).send({
+        //   status: 'success'
+        // });
       }).catch((error) => {
         console.error(error);
       });
+    }
+
+    if (fileinfo.file) {
+      console.log(fileinfo.file);
+      for (let i=0;i<count;i++){
+        console.log(fileinfo.file[0]);
+        console.log("-------");
+        uploadFileToStorage(fileinfo.file[i]).then((success) => {
+          // res.status(200).send({
+          //   status: 'success'
+          // });
+        }).catch((error) => {
+          console.error(error);
+        });
+
+      }
     }
 
     const post = req.body;
@@ -126,16 +131,55 @@ router.post("/post", multer.single('file'), async (req, res) => {
  * Upload the image file to Google Storage
  * @param {File} file object that will be uploaded to Google Storage
  */
+
  const uploadImageToStorage = (file) => {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      reject('No image file');
+    }
+    console.log(file);
+    console.log(file.originalname);
+
+    //한글파일 이름
+    file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+
+    let newFileName = `${file.originalname}_${Date.now()}`;
+    console.log(newFileName);
+
+    let fileUpload = bucket.file('images/'+newFileName);
+
+    const blobStream = fileUpload.createWriteStream({
+      metadata: {
+        contentType: file.mimetype
+      }
+    });
+
+    blobStream.on('error', (error) => {
+      console.log(error);
+      reject('Something is wrong! Unable to upload at the moment.');
+    });
+
+    blobStream.on('finish', () => {
+      // The public URL can be used to directly access the file via HTTP.
+      const url = format(`https://storage.googleapis.com/${bucket.name}/images/${fileUpload.name}`);
+      resolve(url);
+    });
+
+    blobStream.end(file.buffer);
+  });
+}
+
+ const uploadFileToStorage = (file) => {
     return new Promise((resolve, reject) => {
       if (!file) {
         reject('No image file');
       }
 
       //한글파일 이름
+      //file.originalname = Buffer.from(JSON.stringify(file.originalname), 'latin1').toString('utf8');
       file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
 
-      let newFileName = `${file.originalname}_${Date.now()}`;
+      let newFileName = `${Date.now()}_${file.originalname}`;
       console.log(newFileName);
 
       let fileUpload = bucket.file('files/'+newFileName);
